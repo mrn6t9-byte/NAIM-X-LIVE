@@ -2,126 +2,58 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Naim x Live Match</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- HLS.js support for .m3u8 -->
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
+<title>NAIM X LIVE - Matches</title>
 <style>
-body{
-  margin:0;
-  background:#0b1220;
-  font-family:Arial,sans-serif;
-  color:white;
-}
-.header{
-  background:#0d2a57;
-  padding:15px;
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
-}
-.player{
-  margin:15px;
-  background:black;
-  border-radius:10px;
-  overflow:hidden;
-}
-video{
-  width:100%;
-  height:230px;
-  background:black;
-}
-.match-list{
-  margin:15px;
-}
-.match-box{
-  background:#1e88e5;
-  padding:12px;
-  border-radius:8px;
-  margin-bottom:10px;
-}
-.match-title{
-  font-weight:bold;
-  margin-bottom:8px;
-}
-.quality-btn{
-  background:#0d47a1;
-  padding:6px 10px;
-  border-radius:6px;
-  margin-right:6px;
-  display:inline-block;
-  cursor:pointer;
-  font-size:14px;
-}
-.quality-btn:hover{
-  background:#1565c0;
-}
-.telegram{
-  margin:20px;
-  background:linear-gradient(90deg,#1da1f2,#0d8ddb);
-  padding:15px;
-  text-align:center;
-  border-radius:10px;
-  font-size:18px;
-}
-.telegram a{
-  color:white;
-  text-decoration:none;
-  font-weight:bold;
-}
+body{margin:0;font-family:monospace;background:#0b0f14;color:#eaeaea;}
+.header{padding:12px;text-align:center;font-weight:bold;font-size:20px;background:#111827;}
+.match{padding:10px;border-bottom:1px solid #22c55e;}
+button{padding:6px;border:1px solid #22c55e;background:#111827;color:#0f0;margin-top:4px;border-radius:4px;cursor:pointer;}
 </style>
-
-<script>
-var video = null;
-var currentLink = "";
-
-function playMatch(link){
-  currentLink = link;
-  if(Hls.isSupported()){
-    if(video.hls){
-      video.hls.destroy();
-    }
-    var hls = new Hls();
-    hls.loadSource(link);
-    hls.attachMedia(video);
-    video.hls = hls;
-  } else if(video.canPlayType('application/vnd.apple.mpegurl')){
-    video.src = link;
-  } else {
-    alert("Your browser does not support HLS streams!");
-  }
-}
-</script>
 </head>
-
 <body>
-
-<div class="header">Naim x Live Match</div>
-
-<div class="player">
-  <video id="liveVideo" controls autoplay></video>
-</div>
-
-<div class="match-list">
-  <!-- Bangladesh vs PNG -->
-  <div class="match-box">
-    <div class="match-title">🏏 Bangladesh vs PNG</div>
-    <div class="quality-btn" onclick="playMatch('https://bd-mc-fdlive.fancode.com/mumbai/139222_english_hls_e5da087ff762368_1ta-di_h264/480p.m3u8')">Low</div>
-    <div class="quality-btn" onclick="playMatch('https://bd-mc-fdlive.fancode.com/mumbai/139222_english_hls_e5da087ff762368_1ta-di_h264/1080p.m3u8')">HD</div>
-  </div>
-</div>
-
-<div class="telegram">
-🔔 <a href="https://t.me/+EUu_2FFLJsdmMGU9" target="_blank">
-Join Telegram for Live Match Links
-</a>
-</div>
+<div class="header">🔴 NAIM X LIVE - Matches</div>
+<div id="matches"></div>
 
 <script>
-video = document.getElementById('liveVideo');
-</script>
+const MATCHES = [
+  {
+    name:"BAN vs IND",
+    game:"ban-ind",
+    providers:{
+      "FanCode 1080p":"https://bd-mc-fdlive.fancode.com/mumbai/139222_english_hls_e5da087ff762368_1ta-di_h264/1080p.m3u8",
+      "FanCode 720p":"https://bd-mc-fdlive.fancode.com/mumbai/139222_english_hls_e5da087ff762368_1ta-di_h264/720p.m3u8"
+    }
+  },
+  {
+    name:"PAK vs SL",
+    game:"pak-sl",
+    providers:{
+      "FanCode 1080p":"https://example.com/pak-sl-1080p.m3u8",
+      "FanCode 720p":"https://example.com/pak-sl-720p.m3u8"
+    }
+  }
+];
 
+const matchesDiv = document.getElementById("matches");
+
+MATCHES.forEach(match=>{
+  const div = document.createElement("div");
+  div.className="match";
+  div.innerHTML=`<b>${match.name}</b>`;
+  for(let p in match.providers){
+    let btn = document.createElement("button");
+    btn.innerText=`${p} - Copy Link`;
+    btn.onclick=()=>{
+      const link = `${location.origin}/match.html?game=${match.game}&src=${encodeURIComponent(p)}`;
+      navigator.clipboard.writeText(link);
+      alert("Link copied:\n"+link);
+    };
+    div.appendChild(document.createElement("br"));
+    div.appendChild(btn);
+  }
+  matchesDiv.appendChild(div);
+});
+</script>
 </body>
 </html>
